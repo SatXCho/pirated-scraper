@@ -1,0 +1,1 @@
+# pirated-scraper
