@@ -29,7 +29,9 @@ def getGameDatafromLink(url):
         'Languages': '',
         'Original Size': '',
         'Repack Size': '',
-        'Torrent': ''
+        'Mirror': '',
+        'Magnet': '',
+        'Banner': '',
     }
     r = requests.get(url)
     soup = BeautifulSoup(r.content, 'html.parser')
@@ -49,9 +51,16 @@ def getGameDatafromLink(url):
         # try and extract the magnet link, most likely the reason for any error outputs
         # on the debug console
         magnet = s.find_all('a')
+        # also extract a failsafe 1337x.to torrent link
+        for b in magnet:
+            if b.get('href').startswith('https://1337x.to/torrent'):
+                gameMetaData['Mirror'] = b.get('href')
         for a in magnet:
             if a.get('href').startswith('magnet'):
-                gameMetaData['Torrent'] = a.get('href')
+                gameMetaData['Magnet'] = a.get('href')
+        # get a banner image
+        image = s.find('img')
+        gameMetaData['Banner'] = image.get('src')
     except:
         status = False
     return [gameMetaData, status]
