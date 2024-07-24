@@ -29,7 +29,7 @@ def searchRoms(romName, System = ''):
         a = tr.find('a')
         if a != None:
             links.append([a.text, 'https://vimm.net' + a.get('href')])
-
+k
     for link in links:
         newurl = link[1]
         r = requests.get(newurl)

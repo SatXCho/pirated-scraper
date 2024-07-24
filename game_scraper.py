@@ -4,8 +4,13 @@ import json
 # The site used is https://fitgirl-repacks.site/
 # which has a collection of webpages of all the repacks available on the site
 # https://fitgirl-repacks.site/all-my-repacks-a-z/?lcp_page0=1#lcp_instance_0
-# They are spread over 82 pages with upto 50 games linked on each page
+# They are spread over n  pages with upto 50 games linked on each page
 
+def getNumberofPages(url):
+    r = requests.get(url)
+    soup = BeautifulSoup(r.content, 'html.parser')
+    s = soup.find('ul', class_='lcp_paginator')
+    return int(s.find_all('a')[-2].text)
 
 # retrieve links for each page
 def getLinksInPage(url):
@@ -65,10 +70,10 @@ def getGameDatafromLink(url):
         status = False
     return [gameMetaData, status]
 
-# get all the links in all the pages, 82 * 50, subject to change
+# get all the links in all the pages, n * 50, subject to change
 def getLinksInAllPages():
     links = []
-    numberOfPages = 82
+    numberOfPages = getNumberofPages('https://fitgirl-repacks.site/all-my-repacks-a-z/?lcp_page0=1#lcp_instance_0')
     defaultUrlpart1 = 'https://fitgirl-repacks.site/all-my-repacks-a-z/?lcp_page0='
     defaultUrlpart2 = '#lcp_instance_0'
     for i in range(1, numberOfPages+1):
