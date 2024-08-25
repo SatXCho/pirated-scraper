@@ -37,6 +37,7 @@ def getGameDatafromLink(url):
         'Mirror': '',
         'Magnet': '',
         'Banner': '',
+        'Description': ''
     }
     r = requests.get(url)
     soup = BeautifulSoup(r.content, 'html.parser')
@@ -66,6 +67,26 @@ def getGameDatafromLink(url):
         # get a banner image
         image = s.find('img')
         gameMetaData['Banner'] = image.get('src')
+        # get the description of the game
+        game_description_spoiler_divs = soup.findAll('div', class_='su-spoiler-title')
+        game_description_spoiler = None
+        for i in game_description_spoiler_divs:
+            if i.__contains__('Game Description'):
+                game_description_spoiler = i
+                break
+
+        if game_description_spoiler:
+            # If found, get the next sibling which should be the content div
+            content_div = game_description_spoiler.find_next_sibling('div', class_='su-spoiler-content')
+            
+            if content_div:
+                # Extract the text from the content div
+                game_description = content_div.get_text(separator='\n', strip=True)
+                gameMetaData['Description'] = game_description
+            else:
+                print("Content div not found.")
+        else:
+            print("Game Description spoiler not found.")
     except:
         status = False
     return [gameMetaData, status]
